@@ -94,7 +94,7 @@ func lexer(input string) []string {
 	tokens := make([]string, 0, len(input))
 	index := 0
 	if validLexer(input) == false {
-		return []string{"error"}
+		return []string{"error"} // sorry for that
 	}
 	st_given := commaLexer(input)
 	runes := []rune(st_given)
