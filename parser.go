@@ -8,12 +8,10 @@ func pres(op string) int {
 		return 1
 	case "*", "/": // have the higher pres
 		return 2
-	case "^": // have the highest pres
+	case "#":
 		return 3
-	case "√":
+	case "^", "√", "!": // have the highest pres
 		return 4
-	case "!":
-		return 5
 	}
 	return 9999
 }
@@ -21,7 +19,7 @@ func pres(op string) int {
 func isOperator(inp string) bool {
 	var operators = map[string]struct{}{
 		"+": {}, "-": {}, "*": {}, "/": {},
-		"^": {}, "!": {}, "√": {},
+		"^": {}, "!": {}, "√": {}, "#": {},
 	}
 	_, ok := operators[inp] // ok returns true if there is such key in operators
 	return ok
@@ -107,9 +105,9 @@ func parse(input []string) Node {
 			op:      "!",
 			Operand: parse(input[:root_ind]), // postfix operand 
 		}
-	case "√":
+	case "√", "#":
 		return UnaryExpr{
-			op:      "√",
+			op:      input[root_ind],
 			Operand: parse(input[root_ind+1:]), // prefix operand
 		}
 	}

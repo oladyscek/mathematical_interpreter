@@ -24,17 +24,19 @@ func (b BinaryExpr) Eval() float64 {
 	}
 	panic("unknown operator")
 }
+
 func factorial(inp float64) float64 {
+	minFlag := false
 	if inp < 0 {
-		panic("negative factorial")
+		minFlag = true
+		inp = inp * -1
 	}
-	if inp != math.Trunc(inp) {
-		panic("float factorial")
+	var fact float64
+	fact = math.Gamma(inp+1)
+	if minFlag{
+		fact = fact * -1
 	}
-	if inp == 1 || inp == 0 {
-		return 1
-	}
-	return inp * (factorial(inp - 1))
+	return fact
 }
 
 func (u UnaryExpr) Eval() float64 {
@@ -43,6 +45,8 @@ func (u UnaryExpr) Eval() float64 {
 		return factorial(u.Operand.Eval())
 	case "√":
 		return math.Sqrt(u.Operand.Eval())
+	case "#": // # is unary minus
+		return -1 * u.Operand.Eval()
 	}
 	return 0
 }

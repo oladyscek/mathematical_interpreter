@@ -25,7 +25,7 @@ func commaLexer(st_input string) string {
 func validLexer(input string) bool {
 	var validOps = map[rune]struct{}{ // valid letters except numbers
 		'+': {}, '-': {}, '*': {}, '/': {},
-		'(': {}, ')': {}, '^': {}, ' ': {},
+		'(': {}, ')': {}, '^': {}, ' ': {}, '#': {},
 		'!': {}, '√': {}, 'π': {}, '.': {}, ',': {},
 	}
 	for _, val := range input {
@@ -39,7 +39,7 @@ func validLexer(input string) bool {
 }
 
 func unaryLexer(input []string) []string {
-	sls := make([]string, 0, len(input)) //output slice
+	sls := make([]string, 0, len(input)) 
 	i := 0
 	var unary = map[string]struct{}{ // set of unary triggers (before unary minus)
 		"+": {}, "-": {}, "*": {}, "/": {},
@@ -47,14 +47,16 @@ func unaryLexer(input []string) []string {
 	}
 	for i < len(input) {
 		if i == 0 && input[i] == "-" { // if first is minus => unary
-			var sb strings.Builder
-			sb.WriteString("-") // building a new token
-			sb.WriteString(input[i+1])
-			sls = append(sls, sb.String()) // add new token
-			i += 2  // +2 because index 0 and 1 are the unary minus and the number
+			sls = append(sls, "#")
+			i++
 			continue // go to next token
 		}
 		if i > 0 && input[i] == "-" { // index could be still 0 and [input[i-1]] will end with an error
+			if _, ok := unary[input[i-1]]; ok {
+				sls = append(sls, "#") // # is unary minus
+				i++
+				continue // go to next token
+			}
 			if _, ok := unary[input[i-1]]; ok { // if minus and token before in unary triggers
 				var sb strings.Builder
 				sb.WriteString("-") // building a new token
