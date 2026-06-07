@@ -25,6 +25,18 @@ func isOperator(inp string) bool {
 	return ok
 }
 
+func isFullPower(input []string) bool {
+	for _, token := range input {
+		switch token {
+		case "+", "-", "*", "/",
+			"!", "√", "#":
+			return false
+		}
+		continue
+	}
+	return true
+}
+
 func root(input []string) int {
 	lowestpres := 9999
 	root_pres := -1
@@ -39,12 +51,19 @@ func root(input []string) int {
 			depth--
 			continue
 		}
-		if depth == 0 { // if we are not in brackets 
+		if depth == 0 { // if we are not in brackets
 			if isOperator(tok) {
-				prec := pres(tok)       // pres of current operator
-				if prec <= lowestpres { // if lower
-					lowestpres = prec
-					root_pres = i
+				prec := pres(tok) // pres of current operator
+				if isFullPower(input) {
+					if prec < lowestpres { // if ^ in all expr go right assotiative
+						lowestpres = prec
+						root_pres = i
+					}
+				} else {
+					if prec <= lowestpres { // basic left assotiative
+						lowestpres = prec
+						root_pres = i
+					}
 				}
 			}
 		}
@@ -90,7 +109,7 @@ func parse(input []string) Node {
 	}
 
 	root_ind := root(input)
-	if root_ind == -1 { // if no root found 
+	if root_ind == -1 { // if no root found
 		panic("invalid expression")
 	}
 	switch input[root_ind] {
@@ -103,7 +122,7 @@ func parse(input []string) Node {
 	case "!":
 		return UnaryExpr{
 			op:      "!",
-			Operand: parse(input[:root_ind]), // postfix operand 
+			Operand: parse(input[:root_ind]), // postfix operand
 		}
 	case "√", "#":
 		return UnaryExpr{
